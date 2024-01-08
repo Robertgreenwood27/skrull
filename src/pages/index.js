@@ -1,59 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import Link from 'next/link';
 
-const Home = () => {
-    const [shuffledImages, setShuffledImages] = useState([]);
-    const [loadMore, setLoadMore] = useState({ top: false, bottom: false });
+const galleries = [
+    { src: "/skull/skull0.png", alt: "Navigate to Skulls Gallery", href: "/skulls" },
+    { src: "/neuron/neuron0.png", alt: "Navigate to Neurons Gallery", href: "/neurons" },
+    // Add more galleries here as needed
+];
 
-    useEffect(() => {
-        setShuffledImages(shuffleArray([...Array(12).keys()].map(k => `${k + 1}.png`)));
-        // Add event listener for scroll
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const handleScroll = () => {
-        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-
-        if (scrollTop + clientHeight === scrollHeight) {
-            // Scrolled to bottom
-            setLoadMore(prev => ({ ...prev, bottom: true }));
-        } else if (scrollTop === 0) {
-            // Scrolled to top
-            setLoadMore(prev => ({ ...prev, top: true }));
-        }
-    };
-
-    useEffect(() => {
-        if (!loadMore.top && !loadMore.bottom) return;
-
-        const newImages = shuffleArray([...Array(12).keys()].map(k => `${k + 1}.png`));
-
-        if (loadMore.top) {
-            setShuffledImages(prevImages => [...newImages, ...prevImages]);
-        }
-
-        if (loadMore.bottom) {
-            setShuffledImages(prevImages => [...prevImages, ...newImages]);
-        }
-
-        setLoadMore({ top: false, bottom: false });
-    }, [loadMore]);
-
-    const shuffleArray = array => {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    };
-
+const Index = () => {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
-            {shuffledImages.map((image, index) => (
-                <img key={index} src={`/${image}`} alt={`Image ${index}`} className="w-full h-auto" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+            {galleries.map((gallery, index) => (
+                <Link href={gallery.href} key={index} legacyBehavior>
+                    <a className="block">
+                        <img src={gallery.src} alt={gallery.alt} className="w-full h-auto object-cover" />
+                    </a>
+                </Link>
             ))}
         </div>
     );
 };
 
-export default Home;
+export default Index;
