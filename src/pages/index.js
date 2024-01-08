@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const ImageGrid = () => {
+const Home = () => {
     const [shuffledImages, setShuffledImages] = useState([]);
     const [loadMore, setLoadMore] = useState({ top: false, bottom: false });
 
@@ -56,4 +56,4 @@ const ImageGrid = () => {
     );
 };
 
-export default ImageGrid;
+export default Home;

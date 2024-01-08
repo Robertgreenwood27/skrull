@@ -42,7 +42,7 @@ body {
   background-color: rgb(var(--background-start-rgb));
   color: rgb(var(--foreground-rgb)); /* This sets the default text color to black for light mode */
   font-family: 'Your Font', sans-serif;
-  background-color: blue;
+  background-color: black;
 }
 
 /* Ensure that all text elements inherit the color from body or explicitly set it */
