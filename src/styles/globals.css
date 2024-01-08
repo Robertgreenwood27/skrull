@@ -2,26 +2,127 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light Mode Variables */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 0, 0, 0; /* Black text for light mode */
+  --background-start-rgb: 255, 255, 255; /* Pure white for body background in light mode */
+  --background-end-rgb: 245, 245, 245; /* Very light grey for gradient */
+  --card-shadow: 0, 0, 0; /* Subtle shadow for light mode */
 }
 
+/* Dark Mode Variables */
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --foreground-rgb: 255, 255, 255; /* White text for dark mode */
+    --background-start-rgb: 9, 9, 9; /* Dark grey, starting color for gradient */
+    --background-end-rgb: 51, 51, 51; /* Darker grey, ending color for gradient */
+    --card-shadow: 0, 0, 0; /* Dark shadow for dark mode */
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+/* Light Theme Class */
+.light-theme {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 245, 245, 245;
+  --card-shadow: 0, 0, 0;
+  background-color: white;
 }
+
+/* Dark Theme Class */
+.dark-theme {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 9, 9, 9;
+  --background-end-rgb: 51, 51, 51;
+  --card-shadow: 0, 0, 0;
+}
+
+/* General Styles */
+body {
+  background-color: rgb(var(--background-start-rgb));
+  color: rgb(var(--foreground-rgb)); /* This sets the default text color to black for light mode */
+  font-family: 'Your Font', sans-serif;
+  background-color: blue;
+}
+
+/* Ensure that all text elements inherit the color from body or explicitly set it */
+h1, h2, h3, h4, h5, h6, p, span, a, div, section, article, aside, header, footer, nav, ul, ol, li {
+  color: inherit; /* This ensures that the text color is inherited from the parent, which is set to black */
+}
+
+.card {
+  background: linear-gradient(4deg, rgba(var(--background-start-rgb), 1) 12%, rgba(var(--background-end-rgb), 1) 100%);
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(var(--card-shadow), 0.2), 0 -1px 1px rgba(var(--card-shadow), 0.1);
+  padding: 5px;
+  margin: 5px;
+  color: rgb(var(--foreground-rgb));
+}
+
+.header {
+  background-color: rgba(var(--background-start-rgb), 1);
+  color: rgb(var(--foreground-rgb));
+  text-align: center;
+}
+
+.menu-button {
+  color: rgb(var(--foreground-rgb));
+  background-color: rgba(var(--background-start-rgb), 1);
+}
+
+.menu-button:hover {
+  background-color: rgba(var(--background-end-rgb), 1); /* Adjust for hover */
+}
+
+.menu-link:hover {
+  background-color: rgba(var(--background-end-rgb), 1); /* Adjust for hover */
+}
+
+/* Styles for larger screens */
+.flex.items-center.space-x-4 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styles for screens with width 440px or less */
+@media screen and (max-width: 440px) {
+  .flex.items-center.space-x-4 {
+    flex-direction: column;
+  }
+
+  .flex.items-center.space-x-4 .rounded-full {
+    order: 2; /* This will push the image below the text */
+  }
+
+  .flex.items-center.space-x-4 div h1 {
+    order: 1; /* This ensures that the text stays on top */
+  }
+}
+
+.dark-theme-divider {
+  background-image: url('/darkvine.png');
+  background-repeat: repeat-x;
+  background-size: 300px; /* Adjust this value to make the image smaller */
+  width: 100%;
+  height: 100px; /* Adjust height as needed */
+}
+
+.light-theme-divider {
+  background-image: url('/lightvine.png');
+  background-repeat: repeat-x;
+  background-size: 300px; /* Adjust this value to make the image smaller */
+  width: 100%;
+  height: 100px; /* Adjust height as needed */
+}
+
+
+
+
+
+
+
+
+
+
