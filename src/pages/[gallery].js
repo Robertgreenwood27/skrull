@@ -19,6 +19,7 @@ const GalleryPage = () => {
     };
 
     const handleTouchMove = (event) => {
+        event.preventDefault();
         const touchMoveY = event.touches[0].clientY;
         const deltaY = initialTouchY - touchMoveY;
         const touchDuration = Date.now() - initialTouchTime;
