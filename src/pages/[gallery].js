@@ -64,15 +64,16 @@ const GalleryPage = () => {
 
     const handleScrollZoom = (event) => {
         if (selectedImage) {
-            if (event.deltaY < 0) {
-                // Scroll up, zoom in
-                setZoomLevel(prevZoomLevel => (prevZoomLevel < maxZoomLevel ? prevZoomLevel + 1 : prevZoomLevel));
-            } else {
-                // Scroll down, zoom out
+            if (event.deltaY > 0) {
+                // Scroll down (finger moves up), zoom out
                 setZoomLevel(prevZoomLevel => (prevZoomLevel > 0 ? prevZoomLevel - 1 : prevZoomLevel));
+            } else {
+                // Scroll up (finger moves down), zoom in
+                setZoomLevel(prevZoomLevel => (prevZoomLevel < maxZoomLevel ? prevZoomLevel + 1 : prevZoomLevel));
             }
         }
     };
+    
 
     useEffect(() => {
         window.addEventListener('wheel', handleScrollZoom);
