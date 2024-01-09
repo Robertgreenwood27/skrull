@@ -126,6 +126,17 @@ const GalleryPage = () => {
         trackMouse: true,
     });
 
+
+    useEffect(() => {
+        if (selectedImage) {
+            document.body.style.overscrollBehaviorY = 'none';
+        } else {
+            document.body.style.overscrollBehaviorY = 'auto';
+        }
+    }, [selectedImage]);
+
+    
+    
     if (selectedImage) {
         return (
             <div
