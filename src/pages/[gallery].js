@@ -6,8 +6,12 @@ const GalleryPage = () => {
     const router = useRouter();
     const { gallery } = router.query;
     const [shuffledImages, setShuffledImages] = useState([]);
+    const [selectedImage, setSelectedImage] = useState(null); // State to track the selected image
+    const [zoomLevel, setZoomLevel] = useState(0); // State to track zoom level
     const [loadMore, setLoadMore] = useState({ top: false, bottom: false });
+    const maxZoomLevel = 4;
 
+    // Shuffle the array of images
     const shuffleArray = array => {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -16,6 +20,7 @@ const GalleryPage = () => {
         return array;
     };
 
+    // Load and shuffle images when the gallery changes
     useEffect(() => {
         if (gallery) {
             const folderName = gallery.slice(0, -1);
@@ -23,6 +28,7 @@ const GalleryPage = () => {
         }
     }, [gallery]);
 
+    // Handle infinite scroll loading
     const handleScroll = () => {
         const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
         if (scrollTop + clientHeight >= scrollHeight - 10) {
@@ -43,27 +49,84 @@ const GalleryPage = () => {
         setLoadMore({ top: false, bottom: false });
     }, [loadMore, gallery]);
 
-    // Function to navigate back to the home page
-    const navigateHome = () => {
-        router.push('/'); // Using Next.js router to navigate
+  // Function to open an image in full screen
+  const openImage = (image) => {
+    // Extract the base image path without the zoom level
+    const baseImagePath = image.includes('/') ? image.split('/')[2].split('.')[0] : image.split('.')[0];
+    setSelectedImage(`/skull/${baseImagePath}`);
+    setZoomLevel(0); // Reset zoom level when a new image is opened
+};
+
+    // Function to close the full screen view
+    const closeFullScreen = () => {
+        setSelectedImage(null);
     };
 
-    // Updated swipe handler for right swipe
+    const handleScrollZoom = (event) => {
+        if (selectedImage) {
+            if (event.deltaY < 0) {
+                // Scroll up, zoom in
+                setZoomLevel(prevZoomLevel => (prevZoomLevel < maxZoomLevel ? prevZoomLevel + 1 : prevZoomLevel));
+            } else {
+                // Scroll down, zoom out
+                setZoomLevel(prevZoomLevel => (prevZoomLevel > 0 ? prevZoomLevel - 1 : prevZoomLevel));
+            }
+        }
+    };
+
+    useEffect(() => {
+        window.addEventListener('wheel', handleScrollZoom);
+
+        return () => {
+            window.removeEventListener('wheel', handleScrollZoom);
+        };
+    }, [selectedImage, maxZoomLevel]);
+
+    // Swipe handler for right swipe
     const handlers = useSwipeable({
         onSwipedRight: () => router.push('/'),
         preventDefaultTouchmoveEvent: true,
         trackMouse: true,
     });
 
+    if (selectedImage) {
+        return (
+            <div className="full-screen-container" onClick={closeFullScreen}>
+                {/* Display the base image */}
+                <img
+                    src={`${selectedImage}.png`}
+                    alt="Base image"
+                    className={`zoom-layer ${zoomLevel === 0 ? 'active' : ''}`}
+                />
+                {/* Display zoom layers */}
+                {[...Array(maxZoomLevel).keys()].map(index => {
+                    // Keep each less zoomed-in image visible longer during zoom-in
+                    const isActive = zoomLevel > index;
+                    return (
+                        <img
+                            key={index}
+                            src={`${selectedImage}${String.fromCharCode(97 + index)}.png`} // e.g., skull4a.png, skull4b.png, etc.
+                            alt={`Zoom level ${index + 1}`}
+                            className={`zoom-layer ${isActive ? 'active' : ''}`}
+                            style={{ transform: `translate(-50%, -50%) scale(${Math.pow(2, index + 1 - zoomLevel)})` }}
+                        />
+                    );
+                })}
+            </div>
+        );
+    }
+    
+    
+    
+
     return (
         <div {...handlers} className="swipe-handler">
-            {/* Navigation Bar */}
-            <div className="nav-bar" onClick={navigateHome}></div>
-
             {/* Gallery Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
                 {shuffledImages.map((image, index) => (
-                    <img key={index} src={image} alt={`Image ${index + 1}`} className="w-full h-auto object-cover" />
+                    <img key={index} src={image} alt={`Image ${index + 1}`} 
+                         className="w-full h-auto object-cover" 
+                         onClick={() => openImage(image)} />
                 ))}
             </div>
         </div>

@@ -158,6 +158,45 @@ h1, h2, h3, h4, h5, h6, p, span, a, div, section, article, aside, header, footer
 
 
 
+.full-screen-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9); /* Dark background for full-screen mode */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000; /* Ensure it's above other content */
+  overflow: hidden; /* Hide overflow to prevent scroll bars on zoom */
+}
+
+.zoom-layer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image covers the area */
+  transform-origin: center; /* Sets the origin point for scaling */
+  transform: translate(-50%, -50%) scale(1); /* Center the image and apply default scale */
+  transition: transform 0.5s ease, opacity 0.5s ease 0.5s; /* Delay opacity transition */
+  opacity: 0; /* Initially hide all layers */
+}
+
+.zoom-layer.active {
+  opacity: 1; /* Show the active layer */
+}
+
+
+
+
+
+
+
+
+
 
 
 
