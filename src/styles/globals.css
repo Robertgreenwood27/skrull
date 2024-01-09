@@ -117,6 +117,7 @@ h1, h2, h3, h4, h5, h6, p, span, a, div, section, article, aside, header, footer
   height: 100px; /* Adjust height as needed */
 }
 
+/* Style for the navigation bar */
 .nav-bar {
   position: fixed;
   top: 0;
@@ -129,20 +130,29 @@ h1, h2, h3, h4, h5, h6, p, span, a, div, section, article, aside, header, footer
   transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transition for hover effect */
   z-index: 1000; /* Ensure the bar is above other elements */
   cursor: pointer; /* Change the cursor to indicate it's clickable */
+  display: block; /* Default display */
 }
 
+/* Style changes when hovering over the navigation bar */
 .nav-bar:hover, .nav-bar:focus {
   width: 15px; /* Slightly wider on hover/focus to make it more noticeable */
   opacity: 0.7; /* Increase opacity on hover/focus for visibility */
 }
 
-/* Keep the bar always visible on touch devices as there's no hover */
+/* Adjust touch behavior for swiping */
+.swipe-handler {
+  touch-action: pan-y; /* Enables swiping in the x direction */
+}
+
+/* Hide the nav-bar on devices that don't support hover (touch devices) */
 @media (hover: none) {
   .nav-bar {
-    width: 15px;
-    opacity: 0.7;
+    display: none; /* Hide the navigation bar on touch devices */
   }
 }
+
+
+
 
 
 

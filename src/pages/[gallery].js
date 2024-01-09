@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useSwipeable } from 'react-swipeable';
 
 const GalleryPage = () => {
     const router = useRouter();
@@ -48,18 +48,25 @@ const GalleryPage = () => {
         router.push('/'); // Using Next.js router to navigate
     };
 
+    // Updated swipe handler for right swipe
+    const handlers = useSwipeable({
+        onSwipedRight: () => router.push('/'),
+        preventDefaultTouchmoveEvent: true,
+        trackMouse: true,
+    });
+
     return (
-        <>
-            {/* Glowing navigation bar */}
+        <div {...handlers} className="swipe-handler">
+            {/* Navigation Bar */}
             <div className="nav-bar" onClick={navigateHome}></div>
 
-            {/* Gallery images */}
+            {/* Gallery Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
                 {shuffledImages.map((image, index) => (
                     <img key={index} src={image} alt={`Image ${index + 1}`} className="w-full h-auto object-cover" />
                 ))}
             </div>
-        </>
+        </div>
     );
 };
 
