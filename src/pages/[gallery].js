@@ -18,27 +18,28 @@ const GalleryPage = () => {
         setInitialTouchTime(Date.now());
     };
 
-     const handleTouchMove = (event) => {
+    const handleTouchMove = (event) => {
         const touchMoveY = event.touches[0].clientY;
         const deltaY = initialTouchY - touchMoveY;
         const touchDuration = Date.now() - initialTouchTime;
-
+    
         // Adjust these thresholds as needed
         const zoomThreshold = 30;
         const timeThreshold = 150; // milliseconds
-
+    
         if (Math.abs(deltaY) > zoomThreshold && touchDuration > timeThreshold) {
             // Likely a zoom gesture
             if (deltaY > 0) {
-                // Swiping up, zoom out
-                setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
-            } else {
-                // Swiping down, zoom in
+                // Swiping up, zoom in (previously zoom out)
                 setZoomLevel(prevZoomLevel => Math.min(prevZoomLevel + 1, maxZoomLevel));
+            } else {
+                // Swiping down, zoom out (previously zoom in)
+                setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
             }
             event.preventDefault();
         }
     };
+    
 
     const handleTouchEnd = () => {
         setInitialTouchY(null);
