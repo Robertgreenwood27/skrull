@@ -11,25 +11,24 @@ const GalleryPage = () => {
     const [loadMore, setLoadMore] = useState({ top: false, bottom: false });
     const maxZoomLevel = 4;
     const [initialTouchY, setInitialTouchY] = useState(null);
-    const [touchMoveY, setTouchMoveY] = useState(null);
+    const [initialTouchTime, setInitialTouchTime] = useState(null);
 
     const handleTouchStart = (event) => {
-        // Store the initial touch Y position
         setInitialTouchY(event.touches[0].clientY);
+        setInitialTouchTime(Date.now());
     };
 
-    const handleTouchMove = (event) => {
-        // Update the touch move Y position
-        setTouchMoveY(event.touches[0].clientY);
-
-        // Determine the direction and length of the swipe
+     const handleTouchMove = (event) => {
+        const touchMoveY = event.touches[0].clientY;
         const deltaY = initialTouchY - touchMoveY;
+        const touchDuration = Date.now() - initialTouchTime;
 
-        // A threshold to determine if it's a zoom gesture (you can adjust this value)
+        // Adjust these thresholds as needed
         const zoomThreshold = 30;
+        const timeThreshold = 150; // milliseconds
 
-        if (Math.abs(deltaY) > zoomThreshold) {
-            // Zooming logic
+        if (Math.abs(deltaY) > zoomThreshold && touchDuration > timeThreshold) {
+            // Likely a zoom gesture
             if (deltaY > 0) {
                 // Swiping up, zoom out
                 setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
@@ -37,16 +36,13 @@ const GalleryPage = () => {
                 // Swiping down, zoom in
                 setZoomLevel(prevZoomLevel => Math.min(prevZoomLevel + 1, maxZoomLevel));
             }
-
-            event.preventDefault(); // Prevent scrolling when zooming
+            event.preventDefault();
         }
-        // If deltaY is within the threshold, it will be treated as a scroll, and the default behavior will occur
     };
 
-    const handleTouchEnd = (event) => {
-        // Reset touch positions
+    const handleTouchEnd = () => {
         setInitialTouchY(null);
-        setTouchMoveY(null);
+        setInitialTouchTime(null);
     };
 
     // Shuffle the array of images
@@ -130,6 +126,12 @@ const GalleryPage = () => {
 
     if (selectedImage) {
         return (
+            <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="swipe-handler"
+        >
             <div className="full-screen-container" onClick={closeFullScreen}>
                 {/* Display the base image */}
                 <img
@@ -152,17 +154,13 @@ const GalleryPage = () => {
                     );
                 })}
             </div>
+            </div>
         );
     }
     
 
     return (
-        <div
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            className="swipe-handler"
-        >
+        <div {...handlers} className="swipe-handler">
             {/* Gallery Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
                 {shuffledImages.map((image, index) => (
