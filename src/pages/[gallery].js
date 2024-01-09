@@ -14,12 +14,17 @@ const GalleryPage = () => {
     const [initialTouchTime, setInitialTouchTime] = useState(null);
 
     const handleTouchStart = (event) => {
+        if (shouldDisablePullToRefresh()) {
+            event.preventDefault();
+        }
         setInitialTouchY(event.touches[0].clientY);
         setInitialTouchTime(Date.now());
     };
 
     const handleTouchMove = (event) => {
-        event.preventDefault();
+        if (shouldDisablePullToRefresh()) {
+            event.preventDefault();
+        }
         const touchMoveY = event.touches[0].clientY;
         const deltaY = initialTouchY - touchMoveY;
         const touchDuration = Date.now() - initialTouchTime;
@@ -136,7 +141,7 @@ const GalleryPage = () => {
     }, [selectedImage]);
 
     
-    
+
     if (selectedImage) {
         return (
             <div
