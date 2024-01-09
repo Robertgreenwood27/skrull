@@ -4,6 +4,7 @@ import Link from 'next/link';
 const galleries = [
     { src: "/skull/skull0.png", alt: "Navigate to Skulls Gallery", href: "/skulls" },
     { src: "/neuron/neuron0.png", alt: "Navigate to Neurons Gallery", href: "/neurons" },
+    { src: "/eye/eye0.png", alt: "Navigate to eyes Gallery", href: "/eyes" },
     // Add more galleries here as needed
 ];
 
