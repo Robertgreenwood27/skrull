@@ -10,6 +10,44 @@ const GalleryPage = () => {
     const [zoomLevel, setZoomLevel] = useState(0); // State to track zoom level
     const [loadMore, setLoadMore] = useState({ top: false, bottom: false });
     const maxZoomLevel = 4;
+    const [initialTouchY, setInitialTouchY] = useState(null);
+    const [touchMoveY, setTouchMoveY] = useState(null);
+
+    const handleTouchStart = (event) => {
+        // Store the initial touch Y position
+        setInitialTouchY(event.touches[0].clientY);
+    };
+
+    const handleTouchMove = (event) => {
+        // Update the touch move Y position
+        setTouchMoveY(event.touches[0].clientY);
+
+        // Determine the direction and length of the swipe
+        const deltaY = initialTouchY - touchMoveY;
+
+        // A threshold to determine if it's a zoom gesture (you can adjust this value)
+        const zoomThreshold = 30;
+
+        if (Math.abs(deltaY) > zoomThreshold) {
+            // Zooming logic
+            if (deltaY > 0) {
+                // Swiping up, zoom out
+                setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
+            } else {
+                // Swiping down, zoom in
+                setZoomLevel(prevZoomLevel => Math.min(prevZoomLevel + 1, maxZoomLevel));
+            }
+
+            event.preventDefault(); // Prevent scrolling when zooming
+        }
+        // If deltaY is within the threshold, it will be treated as a scroll, and the default behavior will occur
+    };
+
+    const handleTouchEnd = (event) => {
+        // Reset touch positions
+        setInitialTouchY(null);
+        setTouchMoveY(null);
+    };
 
     // Shuffle the array of images
     const shuffleArray = array => {
@@ -117,11 +155,14 @@ const GalleryPage = () => {
         );
     }
     
-    
-    
 
     return (
-        <div {...handlers} className="swipe-handler">
+        <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="swipe-handler"
+        >
             {/* Gallery Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
                 {shuffledImages.map((image, index) => (
