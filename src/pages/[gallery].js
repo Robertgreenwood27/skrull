@@ -9,22 +9,17 @@ const GalleryPage = () => {
     const [selectedImage, setSelectedImage] = useState(null); // State to track the selected image
     const [zoomLevel, setZoomLevel] = useState(0); // State to track zoom level
     const [loadMore, setLoadMore] = useState({ top: false, bottom: false });
-    const maxZoomLevel = 4;
+    const maxZoomLevel = 10;
     const [initialTouchY, setInitialTouchY] = useState(null);
     const [initialTouchTime, setInitialTouchTime] = useState(null);
 
     const handleTouchStart = (event) => {
-        if (shouldDisablePullToRefresh()) {
-            event.preventDefault();
-        }
         setInitialTouchY(event.touches[0].clientY);
         setInitialTouchTime(Date.now());
     };
 
     const handleTouchMove = (event) => {
-        if (shouldDisablePullToRefresh()) {
-            event.preventDefault();
-        }
+        event.preventDefault();
         const touchMoveY = event.touches[0].clientY;
         const deltaY = initialTouchY - touchMoveY;
         const touchDuration = Date.now() - initialTouchTime;
@@ -141,7 +136,7 @@ const GalleryPage = () => {
     }, [selectedImage]);
 
     
-
+    
     if (selectedImage) {
         return (
             <div
