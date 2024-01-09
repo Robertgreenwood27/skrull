@@ -117,6 +117,32 @@ h1, h2, h3, h4, h5, h6, p, span, a, div, section, article, aside, header, footer
   height: 100px; /* Adjust height as needed */
 }
 
+.nav-bar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 5px; /* Minimal initial width */
+  background-color: rgba(0, 123, 255, 0.4); /* Soft blue background */
+  box-shadow: 0 0 8px 2px rgba(0, 123, 255, 0.5); /* Soft blue glow */
+  opacity: 0.3; /* Reduced opacity for a more subtle effect */
+  transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transition for hover effect */
+  z-index: 1000; /* Ensure the bar is above other elements */
+  cursor: pointer; /* Change the cursor to indicate it's clickable */
+}
+
+.nav-bar:hover, .nav-bar:focus {
+  width: 15px; /* Slightly wider on hover/focus to make it more noticeable */
+  opacity: 0.7; /* Increase opacity on hover/focus for visibility */
+}
+
+/* Keep the bar always visible on touch devices as there's no hover */
+@media (hover: none) {
+  .nav-bar {
+    width: 15px;
+    opacity: 0.7;
+  }
+}
 
 
 
