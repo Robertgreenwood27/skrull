@@ -127,46 +127,57 @@ const GalleryPage = () => {
     });
 
 
-    useEffect(() => {
-        if (selectedImage) {
-            document.body.style.overscrollBehaviorY = 'none';
-        } else {
-            document.body.style.overscrollBehaviorY = 'auto';
-        }
-    }, [selectedImage]);
 
+
+
+    useEffect(() => {
+        document.body.style.overscrollBehaviorY = 'contain';
+        return () => {
+            document.body.style.overscrollBehaviorY = 'auto';
+        };
+    }, []);
+    
     
     
     if (selectedImage) {
         return (
             <div
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            className="swipe-handler"
-        >
-            <div className="full-screen-container" onClick={closeFullScreen}>
-                {/* Display the base image */}
-                <img
-                    src={`${selectedImage}.png`}
-                    alt="Base image"
-                    className={`zoom-layer ${zoomLevel === 0 ? 'active' : ''}`}
-                />
-                {/* Display zoom layers */}
-                {[...Array(maxZoomLevel).keys()].map(index => {
-                    // Keep each less zoomed-in image visible longer during zoom-in
-                    const isActive = zoomLevel > index;
-                    return (
-                        <img
-                            key={index}
-                            src={`${selectedImage}${String.fromCharCode(97 + index)}.png`} // e.g., skull4a.png, skull4b.png, etc.
-                            alt={`Zoom level ${index + 1}`}
-                            className={`zoom-layer ${isActive ? 'active' : ''}`}
-                            style={{ transform: `translate(-50%, -50%) scale(${Math.pow(2, index + 1 - zoomLevel)})` }}
-                        />
-                    );
-                })}
-            </div>
+                onTouchStart={(event) => {
+                    handleTouchStart(event);
+                    event.preventDefault(); // Prevent default to disable pull-to-refresh
+                }}
+                onTouchMove={(event) => {
+                    handleTouchMove(event);
+                    event.preventDefault(); // Prevent default to disable pull-to-refresh
+                }}
+                onTouchEnd={handleTouchEnd}
+                className="swipe-handler"
+                style={{ touchAction: 'none' }} // Disable browser's default touch actions
+            >
+                <div className="full-screen-container" onClick={closeFullScreen}>
+                    {/* Display the base image */}
+                    <img
+                        src={`${selectedImage}.png`}
+                        alt="Base image"
+                        className={`zoom-layer ${zoomLevel === 0 ? 'active' : ''}`}
+                    />
+                    {/* Display zoom layers */}
+                    {[...Array(maxZoomLevel).keys()].map(index => {
+                        const isActive = zoomLevel > index;
+                        return (
+                            <img
+                                key={index}
+                                src={`${selectedImage}${String.fromCharCode(97 + index)}.png`} // e.g., skull4a.png, skull4b.png, etc.
+                                alt={`Zoom level ${index + 1}`}
+                                className={`zoom-layer ${isActive ? 'active' : ''}`}
+                                style={{ 
+                                    transform: `translate(-50%, -50%) scale(${Math.pow(2, index + 1 - zoomLevel)})`,
+                                    touchAction: 'none' // Disable browser's default touch actions on each zoom layer
+                                }}
+                            />
+                        );
+                    })}
+                </div>
             </div>
         );
     }
