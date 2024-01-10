@@ -25,21 +25,23 @@ const GalleryPage = () => {
         const touchDuration = Date.now() - initialTouchTime;
     
         // Adjust these thresholds as needed
-        const zoomThreshold = 30;
-        const timeThreshold = 150; // milliseconds
+        const zoomThreshold = 50; // Increased threshold for zoom sensitivity
+        const timeThreshold = 300; // milliseconds - Increased for slower reaction
     
+        // Debounce the zoom action
         if (Math.abs(deltaY) > zoomThreshold && touchDuration > timeThreshold) {
-            // Likely a zoom gesture
-            if (deltaY > 0) {
-                // Swiping up, zoom in (previously zoom out)
-                setZoomLevel(prevZoomLevel => Math.min(prevZoomLevel + 1, maxZoomLevel));
-            } else {
-                // Swiping down, zoom out (previously zoom in)
-                setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
+            if (!lastZoomTime || (Date.now() - lastZoomTime) > 300) { // Debounce zoom action
+                if (deltaY > 0) {
+                    setZoomLevel(prevZoomLevel => Math.min(prevZoomLevel + 1, maxZoomLevel));
+                } else {
+                    setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
+                }
+                lastZoomTime = Date.now(); // Update the last zoom time
             }
             event.preventDefault();
         }
     };
+    
     
 
     const handleTouchEnd = () => {
