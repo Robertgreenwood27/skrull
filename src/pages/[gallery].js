@@ -12,6 +12,7 @@ const GalleryPage = () => {
     const maxZoomLevel = 10;
     const [initialTouchY, setInitialTouchY] = useState(null);
     const [initialTouchTime, setInitialTouchTime] = useState(null);
+    const [zoomActionTaken, setZoomActionTaken] = useState(false);
 
     const debounce = (func, delay) => {
         let debounceTimer;
@@ -29,6 +30,7 @@ const GalleryPage = () => {
     };
 
     const handleTouchMove = (event) => {
+        if (zoomActionTaken) return;
         event.preventDefault();
         const touchMoveY = event.touches[0].clientY;
         const deltaY = initialTouchY - touchMoveY;
@@ -39,6 +41,7 @@ const GalleryPage = () => {
         const timeThreshold = 150; // milliseconds
 
         if (Math.abs(deltaY) > zoomThreshold && touchDuration > timeThreshold) {
+            setZoomActionTaken(true);
             // Likely a zoom gesture
             if (deltaY > 0) {
                 // Swiping up, zoom in (previously zoom out)
@@ -54,6 +57,7 @@ const GalleryPage = () => {
     const handleTouchEnd = () => {
         setInitialTouchY(null);
         setInitialTouchTime(null);
+        setZoomActionTaken(false); // Reset flag on touch end
     };
 
     // Shuffle the array of images
@@ -114,23 +118,21 @@ const GalleryPage = () => {
         setSelectedImage(null);
     };
 
-    const handleScrollZoom = debounce((event) => {
+    const handleScrollZoom = (event) => {
         if (selectedImage) {
             const zoomingIn = event.deltaY < 0;
-
-            setZoomLevel(prevZoomLevel => {
-                if (zoomingIn) {
-                    // Scroll up, zoom in by one level
-                    return Math.min(prevZoomLevel + 1, maxZoomLevel);
-                } else {
-                    // Scroll down, zoom out by one level
-                    return Math.max(prevZoomLevel - 1, 0);
-                }
-            });
-
+            debounce(() => {
+                setZoomLevel(prevZoomLevel => {
+                    if (zoomingIn) {
+                        return Math.min(prevZoomLevel + 1, maxZoomLevel);
+                    } else {
+                        return Math.max(prevZoomLevel - 1, 0);
+                    }
+                });
+            }, 250)(); // Adjust debounce timing as needed
             event.preventDefault();
         }
-    }, 1000); // Adjust the delay as needed, 250 milliseconds is a starting point
+    };
 
 
 
