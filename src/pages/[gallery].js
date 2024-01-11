@@ -13,6 +13,16 @@ const GalleryPage = () => {
     const [initialTouchY, setInitialTouchY] = useState(null);
     const [initialTouchTime, setInitialTouchTime] = useState(null);
 
+    const debounce = (func, delay) => {
+        let debounceTimer;
+        return function () {
+            const context = this;
+            const args = arguments;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => func.apply(context, args), delay);
+        };
+    };
+
     const handleTouchStart = (event) => {
         setInitialTouchY(event.touches[0].clientY);
         setInitialTouchTime(Date.now());
@@ -23,11 +33,11 @@ const GalleryPage = () => {
         const touchMoveY = event.touches[0].clientY;
         const deltaY = initialTouchY - touchMoveY;
         const touchDuration = Date.now() - initialTouchTime;
-    
+
         // Adjust these thresholds as needed
         const zoomThreshold = 30;
         const timeThreshold = 150; // milliseconds
-    
+
         if (Math.abs(deltaY) > zoomThreshold && touchDuration > timeThreshold) {
             // Likely a zoom gesture
             if (deltaY > 0) {
@@ -40,7 +50,6 @@ const GalleryPage = () => {
             event.preventDefault();
         }
     };
-    
 
     const handleTouchEnd = () => {
         setInitialTouchY(null);
@@ -85,40 +94,38 @@ const GalleryPage = () => {
         setLoadMore({ top: false, bottom: false });
     }, [loadMore, gallery]);
 
-  // Function to open an image in full screen
-  const openImage = (image) => {
-    // Extract the base image path without the zoom level
-    const baseImagePath = image.includes('/') ? image.split('/')[2].split('.')[0] : image.split('.')[0];
-    setSelectedImage(`/skull/${baseImagePath}`);
-    setZoomLevel(0); // Reset zoom level when a new image is opened
-};
+    // Function to open an image in full screen
+    const openImage = (image) => {
+        // Extract the base image path without the zoom level
+        const baseImagePath = image.includes('/') ? image.split('/')[2].split('.')[0] : image.split('.')[0];
+        setSelectedImage(`/skull/${baseImagePath}`);
+        setZoomLevel(0); // Reset zoom level when a new image is opened
+    };
 
     // Function to close the full screen view
     const closeFullScreen = () => {
         setSelectedImage(null);
     };
 
-    const handleScrollZoom = (event) => {
+    const handleScrollZoom = debounce((event) => {
         if (selectedImage) {
-            // Determine the direction of the scroll
-            const zoomingIn = event.deltaY < 0; // deltaY is negative when scrolling up
-    
+            const zoomingIn = event.deltaY < 0;
+
             setZoomLevel(prevZoomLevel => {
                 if (zoomingIn) {
-                    // Scroll up, zoom in
+                    // Scroll up, zoom in by one level
                     return Math.min(prevZoomLevel + 1, maxZoomLevel);
                 } else {
-                    // Scroll down, zoom out
+                    // Scroll down, zoom out by one level
                     return Math.max(prevZoomLevel - 1, 0);
                 }
             });
-    
-            event.preventDefault(); // Prevent the default scroll behavior
+
+            event.preventDefault();
         }
-    };
-    
-    
-    
+    }, 250); // Adjust the delay as needed, 250 milliseconds is a starting point
+
+
 
     useEffect(() => {
         window.addEventListener('wheel', handleScrollZoom);
@@ -128,6 +135,7 @@ const GalleryPage = () => {
         };
     }, [selectedImage, maxZoomLevel]);
 
+
     // Swipe handler for right swipe
     const handlers = useSwipeable({
         onSwipedRight: () => router.push('/'),
@@ -135,19 +143,15 @@ const GalleryPage = () => {
         trackMouse: true,
     });
 
-
-
-
-
     useEffect(() => {
         document.body.style.overscrollBehaviorY = 'contain';
         return () => {
             document.body.style.overscrollBehaviorY = 'auto';
         };
     }, []);
-    
-    
-    
+
+
+
     if (selectedImage) {
         return (
             <div
@@ -179,7 +183,7 @@ const GalleryPage = () => {
                                 src={`${selectedImage}${String.fromCharCode(97 + index)}.png`} // e.g., skull4a.png, skull4b.png, etc.
                                 alt={`Zoom level ${index + 1}`}
                                 className={`zoom-layer ${isActive ? 'active' : ''}`}
-                                style={{ 
+                                style={{
                                     transform: `translate(-50%, -50%) scale(${Math.pow(2, index + 1 - zoomLevel)})`,
                                     touchAction: 'none' // Disable browser's default touch actions on each zoom layer
                                 }}
@@ -190,16 +194,16 @@ const GalleryPage = () => {
             </div>
         );
     }
-    
+
 
     return (
         <div {...handlers} className="swipe-handler">
             {/* Gallery Images */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
                 {shuffledImages.map((image, index) => (
-                    <img key={index} src={image} alt={`Image ${index + 1}`} 
-                         className="w-full h-auto object-cover" 
-                         onClick={() => openImage(image)} />
+                    <img key={index} src={image} alt={`Image ${index + 1}`}
+                        className="w-full h-auto object-cover"
+                        onClick={() => openImage(image)} />
                 ))}
             </div>
         </div>
