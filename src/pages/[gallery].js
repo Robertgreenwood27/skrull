@@ -143,7 +143,7 @@ const GalleryPage = () => {
 
             event.preventDefault();
         }
-    }, 250); // Adjust the delay as needed, 250 milliseconds is a starting point
+    }, 1000); // Adjust the delay as needed, 250 milliseconds is a starting point
 
 
 
