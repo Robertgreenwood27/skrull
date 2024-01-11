@@ -94,13 +94,20 @@ const GalleryPage = () => {
         setLoadMore({ top: false, bottom: false });
     }, [loadMore, gallery]);
 
+
     // Function to open an image in full screen
     const openImage = (image) => {
-        // Extract the base image path without the zoom level
         const baseImagePath = image.includes('/') ? image.split('/')[2].split('.')[0] : image.split('.')[0];
         setSelectedImage(`/skull/${baseImagePath}`);
         setZoomLevel(0); // Reset zoom level when a new image is opened
+    
+        // Preload all zoom layers
+        [...Array(maxZoomLevel).keys()].forEach(index => {
+            const zoomLayer = new Image();
+            zoomLayer.src = `/skull/${baseImagePath}${String.fromCharCode(97 + index)}.png`; // e.g., skull4a.png
+        });
     };
+    
 
     // Function to close the full screen view
     const closeFullScreen = () => {
