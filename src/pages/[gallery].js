@@ -105,16 +105,24 @@ const GalleryPage = () => {
 
     // Function to open an image in full screen
     const openImage = (image) => {
-        const baseImagePath = image.includes('/') ? image.split('/')[2].split('.')[0] : image.split('.')[0];
-        setSelectedImage(`/skull/${baseImagePath}`);
+        // Remove the trailing 's' from the gallery name
+        const folderName = gallery.slice(0, -1);
+    
+        // Extract the image base name (e.g., 'neuron1' from 'neuron/neuron1.png')
+        const baseImagePath = image.split('/').pop().split('.')[0];
+    
+        // Update the selected image path to use the correct folder name
+        setSelectedImage(`/${folderName}/${baseImagePath}`);
         setZoomLevel(0); // Reset zoom level when a new image is opened
     
-        // Preload all zoom layers
+        // Preload all zoom layers for the selected image
         [...Array(maxZoomLevel).keys()].forEach(index => {
             const zoomLayer = new Image();
-            zoomLayer.src = `/skull/${baseImagePath}${String.fromCharCode(97 + index)}.png`; // e.g., skull4a.png
+            zoomLayer.src = `/${folderName}/${baseImagePath}${String.fromCharCode(97 + index)}.png`; // Use the adjusted folder name
         });
     };
+    
+    
     
 
     // Function to close the full screen view

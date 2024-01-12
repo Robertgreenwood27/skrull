@@ -2,9 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 
 const galleries = [
-    { src: "/neuron/neuron0.png", alt: "Navigate to Neurons Gallery", href: "/[gallery]", as: "/neurons" },
     { src: "/skull/skull0.png", alt: "Navigate to Skulls Gallery", href: "/[gallery]", as: "/skulls" },
-    
+    { src: "/neuron/neuron0.png", alt: "Navigate to Neurons Gallery", href: "/[gallery]", as: "/neurons" },
     { src: "/eye/eye0.png", alt: "Navigate to Eyes Gallery", href: "/[gallery]", as: "/eyes" },
     { src: "/garbage/garbage0.png", alt: "Navigate to Garbages Gallery", href: "/[gallery]", as: "/garbages" },
     { src: "/sadcat/sadcat0.png", alt: "Navigate to sadcats Gallery", href: "/[gallery]", as: "/sadcats" },
