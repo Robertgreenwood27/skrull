@@ -73,7 +73,11 @@ const GalleryPage = () => {
     useEffect(() => {
         if (gallery) {
             const folderName = gallery.slice(0, -1);
-            setShuffledImages(shuffleArray([...Array(16).keys()].map(k => `/${folderName}/${folderName}${k + 1}.png`)));
+            const images = [];
+            for (let i = 1; i <= 16; i++) {
+                images.push(`/${folderName}/${folderName}${i}.png`);
+            }
+            setShuffledImages(images);
         }
     }, [gallery]);
 
