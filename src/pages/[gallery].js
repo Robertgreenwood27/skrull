@@ -10,6 +10,7 @@ const GalleryPage = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [zoomLevel, setZoomLevel] = useState(0);
     const maxZoomLevel = 10;
+    const [scrollPosition, setScrollPosition] = useState(0); // State to store scroll position
 
     // Function to shuffle the array of images
     const shuffleArray = array => {
@@ -34,6 +35,7 @@ const GalleryPage = () => {
 
     // Function to open an image in full screen
     const openImage = (image) => {
+        setScrollPosition(window.scrollY); // Save the current scroll position
         const folderName = gallery.slice(0, -1);
         const baseImagePath = image.split('/').pop().split('.')[0];
         setSelectedImage(`/${folderName}/${baseImagePath}`);
@@ -44,6 +46,13 @@ const GalleryPage = () => {
     const closeFullScreen = () => {
         setSelectedImage(null);
     };
+
+    // Restore the scroll position when selectedImage changes
+    useEffect(() => {
+        if (!selectedImage) {
+            window.scrollTo(0, scrollPosition);
+        }
+    }, [selectedImage, scrollPosition]);
 
     if (selectedImage) {
         return (
