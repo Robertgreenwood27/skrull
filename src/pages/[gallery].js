@@ -10,7 +10,7 @@ const GalleryPage = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [zoomLevel, setZoomLevel] = useState(0);
     const maxZoomLevel = 10;
-    const [scrollPosition, setScrollPosition] = useState(0); // State to store scroll position
+    const [scrollPosition, setScrollPosition] = useState(0);
 
     // Function to shuffle the array of images
     const shuffleArray = array => {
@@ -47,6 +47,11 @@ const GalleryPage = () => {
         setSelectedImage(null);
     };
 
+    // Function to handle base image swap
+    const handleBaseImageSwap = (newBaseImage) => {
+        setSelectedImage(newBaseImage);
+    };
+
     // Restore the scroll position when selectedImage changes
     useEffect(() => {
         if (!selectedImage) {
@@ -62,6 +67,7 @@ const GalleryPage = () => {
                     maxZoomLevel={maxZoomLevel} 
                     setZoomLevel={setZoomLevel} 
                     zoomLevel={zoomLevel} 
+                    onBaseImageSwap={handleBaseImageSwap} // Pass the callback function
                 />
             </div>
         );
