@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, onBaseImageSwap }) => {
-    const [lastZoomLevel, setLastZoomLevel] = useState(0); // State to keep track of the last zoom level
+    const [lastZoomLevel, setLastZoomLevel] = useState(0);
     const [initialTouchY, setInitialTouchY] = useState(null);
     const [initialTouchTime, setInitialTouchTime] = useState(null);
     const [zoomActionTaken, setZoomActionTaken] = useState(false);
@@ -36,15 +36,13 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
         const touchDuration = Date.now() - initialTouchTime;
 
         const zoomThreshold = 30;
-        const timeThreshold = 150; // milliseconds
+        const timeThreshold = 150;
 
         if (Math.abs(deltaY) > zoomThreshold && touchDuration > timeThreshold) {
             setZoomActionTaken(true);
             if (deltaY > 0) {
-                // Swiping up, zoom in
                 setZoomLevel(prevZoomLevel => Math.min(prevZoomLevel + 1, maxZoomLevel));
             } else {
-                // Swiping down, zoom out
                 setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
             }
         }
@@ -63,12 +61,12 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
         return newBaseImage;
     };
 
-    // Effect to swap the base image when zooming out from the last zoom level
+    // Effect to swap the base image when zooming out from the last zoom level ('j')
     useEffect(() => {
-        if (zoomLevel < lastZoomLevel && lastZoomLevel === maxZoomLevel) {
+        if (zoomLevel === 0 && lastZoomLevel === 1 && maxZoomLevel === 10) {
             const newBaseImage = swapBaseImage();
-            setZoomLevel(0); // Reset zoom level
-            onBaseImageSwap(newBaseImage); // Call the callback function to update the base image in the parent component
+            setZoomLevel(0);
+            onBaseImageSwap(newBaseImage);
         }
         setLastZoomLevel(zoomLevel);
     }, [zoomLevel, lastZoomLevel, maxZoomLevel, selectedImage, onBaseImageSwap]);
