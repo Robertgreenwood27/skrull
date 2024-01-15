@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, onBaseImageSwap }) => {
-    const [lastZoomLevel, setLastZoomLevel] = useState(0);
     const [initialTouchY, setInitialTouchY] = useState(null);
     const [initialTouchTime, setInitialTouchTime] = useState(null);
     const [zoomActionTaken, setZoomActionTaken] = useState(false);
+    const [imageSwapped, setImageSwapped] = useState(false); // Flag to indicate if image has been swapped
 
     // Handle mouse wheel zoom
     const handleScrollZoom = (event) => {
@@ -58,18 +58,25 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
     // Function to swap the base image
     const swapBaseImage = () => {
         const newBaseImage = selectedImage.replace(/\d+/, () => Math.floor(Math.random() * 16) + 1);
+        setImageSwapped(true); // Set the flag to true after swapping
         return newBaseImage;
     };
 
+    // Reset image swapped flag when a new image is opened or zoomed in
+    useEffect(() => {
+        if (zoomLevel > 0) {
+            setImageSwapped(false);
+        }
+    }, [selectedImage, zoomLevel]);
+
     // Effect to swap the base image when zooming out from the last zoom level ('j')
     useEffect(() => {
-        if (zoomLevel === 0 && lastZoomLevel === 1 && maxZoomLevel === 10) {
+        if (zoomLevel === 0 && !imageSwapped) {
             const newBaseImage = swapBaseImage();
             setZoomLevel(0);
             onBaseImageSwap(newBaseImage);
         }
-        setLastZoomLevel(zoomLevel);
-    }, [zoomLevel, lastZoomLevel, maxZoomLevel, selectedImage, onBaseImageSwap]);
+    }, [zoomLevel, selectedImage, onBaseImageSwap, imageSwapped]);
 
     useEffect(() => {
         window.addEventListener('wheel', handleScrollZoom);
