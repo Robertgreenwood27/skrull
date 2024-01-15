@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 
 const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, onBaseImageSwap }) => {
     const [lastZoomLevel, setLastZoomLevel] = useState(0); // State to keep track of the last zoom level
+    const [initialTouchY, setInitialTouchY] = useState(null);
+    const [initialTouchTime, setInitialTouchTime] = useState(null);
+    const [zoomActionTaken, setZoomActionTaken] = useState(false);
 
+    // Handle mouse wheel zoom
     const handleScrollZoom = (event) => {
         if (selectedImage) {
             const zoomingIn = event.deltaY < 0;
@@ -17,10 +21,44 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
         }
     };
 
+    // Handle touch start
+    const handleTouchStart = (event) => {
+        setInitialTouchY(event.touches[0].clientY);
+        setInitialTouchTime(Date.now());
+    };
+
+    // Handle touch move
+    const handleTouchMove = (event) => {
+        if (zoomActionTaken) return;
+        event.preventDefault();
+        const touchMoveY = event.touches[0].clientY;
+        const deltaY = initialTouchY - touchMoveY;
+        const touchDuration = Date.now() - initialTouchTime;
+
+        const zoomThreshold = 30;
+        const timeThreshold = 150; // milliseconds
+
+        if (Math.abs(deltaY) > zoomThreshold && touchDuration > timeThreshold) {
+            setZoomActionTaken(true);
+            if (deltaY > 0) {
+                // Swiping up, zoom in
+                setZoomLevel(prevZoomLevel => Math.min(prevZoomLevel + 1, maxZoomLevel));
+            } else {
+                // Swiping down, zoom out
+                setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
+            }
+        }
+    };
+
+    // Handle touch end
+    const handleTouchEnd = () => {
+        setInitialTouchY(null);
+        setInitialTouchTime(null);
+        setZoomActionTaken(false);
+    };
+
     // Function to swap the base image
     const swapBaseImage = () => {
-        // Logic to select a new random base image
-        // Example: Replace '3' with a random number within the valid range
         const newBaseImage = selectedImage.replace(/\d+/, () => Math.floor(Math.random() * 16) + 1);
         return newBaseImage;
     };
@@ -43,7 +81,12 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
     }, [selectedImage, maxZoomLevel, zoomLevel]);
 
     return (
-        <div className="full-screen-container">
+        <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="full-screen-container"
+        >
             {/* Display the base image */}
             <img
                 src={`${selectedImage}.png`}
