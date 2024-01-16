@@ -25,7 +25,7 @@ const ContinuousScrollComponent = ({ gallery, shuffledImages, setShuffledImages,
     }, [loadMore, gallery]);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-0">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-0">
             {shuffledImages.map((image, index) => (
                 <img
                     key={index}
