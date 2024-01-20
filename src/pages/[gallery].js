@@ -21,15 +21,25 @@ const GalleryPage = () => {
         return array;
     };
 
+    // Function to check for .mp4 and fallback to .png
+    const checkForVideo = (basePath) => {
+        return fetch(`${basePath}.mp4`, { method: 'HEAD' })
+            .then(res => res.ok ? `${basePath}.mp4` : `${basePath}.png`)
+            .catch(() => `${basePath}.png`);
+    };
+
     // Load and shuffle images when the gallery changes
     useEffect(() => {
         if (gallery) {
             const folderName = gallery.slice(0, -1);
-            const images = [];
+            const imagePromises = [];
             for (let i = 1; i <= 16; i++) {
-                images.push(`/${folderName}/${folderName}${i}.png`);
+                const basePath = `/${folderName}/${folderName}${i}`;
+                imagePromises.push(checkForVideo(basePath));
             }
-            setShuffledImages(shuffleArray(images));
+            Promise.all(imagePromises).then(images => {
+                setShuffledImages(shuffleArray(images));
+            });
         }
     }, [gallery]);
 
