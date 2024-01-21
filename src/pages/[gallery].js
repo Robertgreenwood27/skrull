@@ -12,6 +12,57 @@ const GalleryPage = () => {
     const maxZoomLevel = 10;
     const [scrollPosition, setScrollPosition] = useState(0);
 
+    // Touch event state
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+
+    // Detect swipe left
+    const handleTouchStart = e => {
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = e => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        const isSwipeLeft = distance > 50; // Threshold for swipe left action
+
+        if (isSwipeLeft) {
+            router.back(); // Go back one page
+        }
+
+        // Reset touch coordinates
+        setTouchStart(null);
+        setTouchEnd(null);
+    };
+
+    // Detect click on the left side
+    const handleClick = e => {
+        const isLeftClick = e.clientX < window.innerWidth / 4; // Check if click is on the left 25% of the screen
+
+        if (isLeftClick) {
+            router.back(); // Go back one page
+        }
+    };
+
+    // Add event listeners
+    useEffect(() => {
+        window.addEventListener('touchstart', handleTouchStart);
+        window.addEventListener('touchmove', handleTouchMove);
+        window.addEventListener('touchend', handleTouchEnd);
+        window.addEventListener('click', handleClick);
+
+        return () => {
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+            window.removeEventListener('click', handleClick);
+        };
+    }, [touchStart, touchEnd]);
+
     // Function to shuffle the array of images
     const shuffleArray = array => {
         for (let i = array.length - 1; i > 0; i--) {
@@ -77,7 +128,7 @@ const GalleryPage = () => {
                     maxZoomLevel={maxZoomLevel} 
                     setZoomLevel={setZoomLevel} 
                     zoomLevel={zoomLevel} 
-                    onBaseImageSwap={handleBaseImageSwap} // Pass the callback function
+                    onBaseImageSwap={handleBaseImageSwap}
                 />
             </div>
         );
@@ -88,7 +139,7 @@ const GalleryPage = () => {
             gallery={gallery} 
             shuffledImages={shuffledImages} 
             setShuffledImages={setShuffledImages} 
-            openImage={openImage} // Ensure this prop is passed
+            openImage={openImage}
         />
     );
 };

@@ -13,7 +13,7 @@ const galleries = [
 
 const Index = () => {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+        <div>
             {galleries.map((gallery, index) => (
                 <Link href={gallery.href} as={gallery.as} key={index} legacyBehavior>
                     <a className="block">
