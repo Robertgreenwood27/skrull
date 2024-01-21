@@ -1,4 +1,3 @@
-//index.js
 import React from 'react';
 import Link from 'next/link';
 
@@ -13,7 +12,7 @@ const galleries = [
 
 const Index = () => {
     return (
-        <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             {galleries.map((gallery, index) => (
                 <Link href={gallery.href} as={gallery.as} key={index} legacyBehavior>
                     <a className="block">
