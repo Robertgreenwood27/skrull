@@ -42,18 +42,19 @@ const ContinuousScrollComponent = ({ gallery, shuffledImages, setShuffledImages,
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
             {shuffledImages.map((image, index) => (
-                image.endsWith('.mp4') ? (
-                    <video
-                        key={index}
-                        src={image}
-                        alt={`Video ${index + 1}`}
-                        className="w-full h-auto object-cover"
-                        onClick={() => openImage(image)}
-                        loop
-                        autoPlay
-                        muted
-                    />
-                ) : (
+    image.endsWith('.mp4') ? (
+        <video
+            key={index}
+            src={image}
+            alt={`Video ${index + 1}`}
+            className="w-full h-auto object-cover"
+            onClick={() => openImage(image)}
+            loop
+            autoPlay
+            muted
+            playsInline // Add this attribute
+        />
+    ) : (
                     <img
                         key={index}
                         src={image}
