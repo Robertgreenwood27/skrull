@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const ContinuousScrollComponent = ({ gallery, shuffledImages, setShuffledImages, openImage }) => {
     const [loadMore, setLoadMore] = useState({ top: false, bottom: false });
+    const [isLoading, setIsLoading] = useState(false);
 
     // Handle infinite scroll loading
     const handleScroll = () => {
@@ -17,12 +18,15 @@ const ContinuousScrollComponent = ({ gallery, shuffledImages, setShuffledImages,
     }, []);
 
     useEffect(() => {
-        if (!loadMore.bottom) return;
+        if (!loadMore.bottom || !gallery) return;
+
+        setIsLoading(true);
+
         const folderName = gallery.slice(0, -1);
         const newImages = [...Array(16).keys()].map(k => {
             const basePath = `/${folderName}/${folderName}${k + 1}`;
             // Attempt to fetch the .mp4 version, if not available fallback to .png
-            fetch(`${basePath}.mp4`, { method: 'HEAD' })
+            return fetch(`${basePath}.mp4`, { method: 'HEAD' })
                 .then(res => {
                     if (res.ok) {
                         return `${basePath}.mp4`;
@@ -30,43 +34,55 @@ const ContinuousScrollComponent = ({ gallery, shuffledImages, setShuffledImages,
                         return `${basePath}.png`;
                     }
                 })
-                .catch(() => `${basePath}.png`)
-                .then(imagePath => setShuffledImages(prevImages => [...prevImages, imagePath]));
+                .catch(() => `${basePath}.png`);
         });
+
+        Promise.all(newImages)
+            .then(imagePaths => {
+                setShuffledImages(prevImages => [...prevImages, ...imagePaths]);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching images:', error);
+                setIsLoading(false);
+            });
+
         setLoadMore({ top: false, bottom: false });
-    }, [loadMore, gallery]);
-
-
-    
+    }, [loadMore, gallery, setShuffledImages]);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {shuffledImages.map((image, index) => (
-    image.endsWith('.mp4') ? (
-        <video
-            key={index}
-            src={image}
-            alt={`Video ${index + 1}`}
-            className="w-full h-auto object-cover"
-            onClick={() => openImage(image)}
-            loop
-            autoPlay
-            muted
-            playsInline // Add this attribute
-        />
-    ) : (
-                    <img
-                        key={index}
-                        src={image}
-                        alt={`Image ${index + 1}`}
-                        className="w-full h-auto object-cover"
-                        onClick={() => openImage(image)}
-                    />
-                )
+                <div key={index} className="aspect-w-1 aspect-h-1">
+                    {image.endsWith('.mp4') ? (
+                        <video
+                            src={image}
+                            alt={`Video ${index + 1}`}
+                            className="object-cover w-full h-full"
+                            onClick={() => openImage(image)}
+                            loop
+                            autoPlay
+                            muted
+                            playsInline
+                        />
+                    ) : (
+                        <img
+                            src={image}
+                            alt={`Image ${index + 1}`}
+                            className="object-cover w-full h-full"
+                            onClick={() => openImage(image)}
+                            loading="lazy"
+                        />
+                    )}
+                </div>
             ))}
+            {isLoading && (
+                <div className="col-span-full text-center">
+                    <p>Loading more images...</p>
+                </div>
+            )}
         </div>
     );
 };
 
 export default ContinuousScrollComponent;
- 

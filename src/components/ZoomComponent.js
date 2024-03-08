@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, onBaseImageSwap }) => {
+const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, onBaseImageSwap, onPreviousImage, onNextImage }) => {
     const [initialTouchY, setInitialTouchY] = useState(null);
     const [initialTouchTime, setInitialTouchTime] = useState(null);
     const [zoomActionTaken, setZoomActionTaken] = useState(false);
-    const [imageSwapped, setImageSwapped] = useState(false); // Flag to indicate if image has been swapped
+    const [imageSwapped, setImageSwapped] = useState(false);
 
     // Handle mouse wheel zoom
     const handleScrollZoom = (event) => {
@@ -58,7 +58,7 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
     // Function to swap the base image
     const swapBaseImage = () => {
         const newBaseImage = selectedImage.replace(/\d+/, () => Math.floor(Math.random() * 16) + 1);
-        setImageSwapped(true); // Set the flag to true after swapping
+        setImageSwapped(true);
         return newBaseImage;
     };
 
@@ -78,12 +78,29 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
         }
     }, [zoomLevel, selectedImage, onBaseImageSwap, imageSwapped]);
 
+    // Keyboard event handler
+    const handleKeyDown = (event) => {
+        if (selectedImage) {
+            if (event.key === 'ArrowUp') {
+                setZoomLevel(prevZoomLevel => Math.min(prevZoomLevel + 1, maxZoomLevel));
+            } else if (event.key === 'ArrowDown') {
+                setZoomLevel(prevZoomLevel => Math.max(prevZoomLevel - 1, 0));
+            } else if (event.key === 'ArrowLeft') {
+                onPreviousImage();
+            } else if (event.key === 'ArrowRight') {
+                onNextImage();
+            }
+        }
+    };
+
     useEffect(() => {
         window.addEventListener('wheel', handleScrollZoom);
+        window.addEventListener('keydown', handleKeyDown);
         return () => {
             window.removeEventListener('wheel', handleScrollZoom);
+            window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [selectedImage, maxZoomLevel, zoomLevel]);
+    }, [selectedImage, maxZoomLevel, zoomLevel, onPreviousImage, onNextImage]);
 
     return (
         <div
@@ -91,6 +108,7 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
             className="full-screen-container"
+            tabIndex="0"
         >
             {/* Display the base image */}
             <img
@@ -114,6 +132,11 @@ const ZoomComponent = ({ selectedImage, maxZoomLevel, setZoomLevel, zoomLevel, o
                     />
                 );
             })}
+            {/* Navigation controls */}
+            <div className="navigation-controls">
+                <button onClick={onPreviousImage}>&larr;</button>
+                <button onClick={onNextImage}>&rarr;</button>
+            </div>
         </div>
     );
 };
